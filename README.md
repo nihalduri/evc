@@ -60,7 +60,7 @@ The typical workflow:
   # (and merge them in to the feature)
   evc pull main
   evc merge-into FEATURE-NAME --order main
-  
+
   # merge-into also allows multiple other branches in order, useful if e.g.
   # you want feature B on top of feature A or if you want to update such a
   # feature B when there are new changes in main and/or feature A
@@ -100,9 +100,19 @@ Additional commands and options:
   bash --version
   ```
 
-- **Clone the source repo.** Clone this EVC repo (from GitHub.) 
+- **Clone the source repo.** Clone this EVC repo:
+
+  ```bash
+  git clone https://github.com/nihalduri/evc.git
+  ``` 
 
 - **Add EVC to your PATH.** Add this repo's `bin` folder to your PATH.
+
+  For example, in macOS/Linux, add a line like the following to `~/.bashrc` or `~/.bash_profile`, then open a new terminal (or `source` that file):
+
+  ```bash
+  export PATH="/PATH/TO/CLONED/REPO/bin:$PATH"
+  ```
 
 - **Verify the install.** In a new shell:
 
