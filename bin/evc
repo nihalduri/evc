@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# EVC entry point. Usage: evc <command> [args...]
+set -euo pipefail
+
+_script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+if [[ -d "${_script_dir}/../lib" && -d "${_script_dir}/../commands" ]]; then
+  EVC_INSTALL_ROOT=$(cd "${_script_dir}/.." && pwd)
+elif [[ -d "${_script_dir}/lib" && -d "${_script_dir}/commands" ]]; then
+  EVC_INSTALL_ROOT="${_script_dir}"
+else
+  echo "Error: installation broken: cannot locate EVC lib/commands relative to ${_script_dir}" >&2
+  exit 1
+fi
+export EVC_INSTALL_ROOT
+
+# shellcheck source=lib/common.sh
+source "${EVC_INSTALL_ROOT}/lib/common.sh"
+
+EVC_WORK_DIR=$(pwd)
+export EVC_WORK_DIR
+
+if [[ $# -eq 0 ]]; then
+  cat <<'EOF'
+Usage: evc <command> [args...]
+
+Commands:
+  clone <URL>
+  configure-main-branch-name <ALTERNATE-NAME>
+  pull <REMOTE-BRANCH-NAME>
+  new-feature <NAME>
+  switch-feature <NAME>
+  rename-current-feature <NEW-NAME>
+  list-current-feature
+  list-all-features
+  delete-feature <NAME>
+  push <BRANCH-NAME> <CHANGE-DESCRIPTION>
+  merge-into <NAME> --order <B1>,<B2>,...
+  turn-into-git-repo
+EOF
+  exit 0
+fi
+
+# Shell-escape an argument that contains whitespace or a double quote.
+_evc_format_arg() {
+  local arg=$1 quoted
+  if [[ "${arg}" == *[[:space:]]* || "${arg}" == *\"* ]]; then
+    quoted=${arg//\\/\\\\}
+    quoted=${quoted//\"/\\\"}
+    printf '"%s"' "${quoted}"
+  else
+    printf '%s' "${arg}"
+  fi
+}
+
+# "evc <command> [args...]" as the user ran it, for the project git logs.
+_evc_format_invocation() {
+  local arg out="evc"
+  for arg in "$@"; do
+    out+=" $(_evc_format_arg "${arg}")"
+  done
+  printf '%s\n' "${out}"
+}
+
+COMMAND=$1
+shift
+ARGS=("$@")
+
+export EVC_INVOCATION
+EVC_INVOCATION=$(_evc_format_invocation "${COMMAND}" "${ARGS[@]+"${ARGS[@]}"}")
+
+# shellcheck disable=SC1090
+source "${EVC_INSTALL_ROOT}/commands/${COMMAND//-/_}.sh" 2>/dev/null \
+  || die "Unknown EVC command: ${COMMAND}"
+
+info "Working (may take up to 10s, stopping partway could result in inconsistent state) ..."
+echo
+"cmd_${COMMAND//-/_}" "${ARGS[@]+"${ARGS[@]}"}"
