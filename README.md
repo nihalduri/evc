@@ -31,35 +31,53 @@ The typical workflow:
   ```bash
   # clone a remote repo to create your local copy
   evc clone URL/TO/REMOTE/REPO
+  
   # or just turn current folder into a local Git repo
   evc turn-into-git-repo
+  
   # if the name of the "main" branch should be other than main
   evc configure-main-branch-name ALTERNATE-NAME
+  
   # pull remote feature
   evc pull REMOTE-BRANCH-NAME
+  
   # or create new local feature
   evc new-feature NEW-FEATURE-NAME
+  
   # do some work ...
+  
   # can create multiple local features
   evc new-feature SECOND-NEW-FEATURE
+  
   # work on second feature ...
+  
   # switch back and work more on the first feature
   evc switch-feature FIRST-FEATURE-NAME
+  
   # work ...
+  
   # occasionally pull in remote changes from main
   # (and merge them in to the feature)
   evc pull main
   evc merge-into FEATURE-NAME --order main
-  # merge-into also allows multiple other branches in order, useful if e.g. you want feature B on top of feature A or if you want to update such a feature B when there are new changes in main and/or feature A
+  
+  # merge-into also allows multiple other branches in order, useful if e.g.
+  # you want feature B on top of feature A or if you want to update such a
+  # feature B when there are new changes in main and/or feature A
+  
   # work ...
+  
   # if applicable, occasionally pull in remote changes from shared feature branch
   evc pull FEATURE-NAME
+  
   # work ...
+  
   # create or update remote feature branch
   evc push FEATURE-NAME "CHANGES-DESCRIPTION"
+  
   # after push, create a PR on GitHub or equivalent for your remote platform
-  # if you need to make more changes (e.g. after review)
-  # work ...
+  
+  # if you need to push more changes (e.g. after review)
   evc push FEATURE-NAME "NEW-CHANGES-DESCRIPTION"
   ```
 
